@@ -1,6 +1,7 @@
 package edu.student.system.service.impl;
 
 import edu.student.system.domain.Roles;
+import edu.student.system.domain.enumeration.RoleName;
 import edu.student.system.repository.RolesRepository;
 import edu.student.system.service.RolesService;
 import edu.student.system.service.dto.RolesDTO;
@@ -36,37 +37,6 @@ public class RolesServiceImpl implements RolesService {
   }
 
   @Override
-  public RolesDTO save(RolesDTO rolesDTO) {
-    log.debug("Request to save Roles : {}", rolesDTO);
-    Roles roles = rolesMapper.toEntity(rolesDTO);
-    roles = rolesRepository.save(roles);
-    return rolesMapper.toDto(roles);
-  }
-
-  @Override
-  public RolesDTO update(RolesDTO rolesDTO) {
-    log.debug("Request to update Roles : {}", rolesDTO);
-    Roles roles = rolesMapper.toEntity(rolesDTO);
-    roles = rolesRepository.save(roles);
-    return rolesMapper.toDto(roles);
-  }
-
-  @Override
-  public Optional<RolesDTO> partialUpdate(RolesDTO rolesDTO) {
-    log.debug("Request to partially update Roles : {}", rolesDTO);
-
-    return rolesRepository
-      .findById(rolesDTO.getId())
-      .map(existingRoles -> {
-        rolesMapper.partialUpdate(existingRoles, rolesDTO);
-
-        return existingRoles;
-      })
-      .map(rolesRepository::save)
-      .map(rolesMapper::toDto);
-  }
-
-  @Override
   @Transactional(readOnly = true)
   public List<RolesDTO> findAll() {
     log.debug("Request to get all Roles");
@@ -79,14 +49,9 @@ public class RolesServiceImpl implements RolesService {
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<RolesDTO> findOne(Long id) {
-    log.debug("Request to get Roles : {}", id);
-    return rolesRepository.findById(id).map(rolesMapper::toDto);
+  public Optional<Roles> findByRoleName(RoleName roleName) {
+    log.debug("Request to get Roles : {}", roleName);
+    return rolesRepository.findDistinctByName(roleName);
   }
 
-  @Override
-  public void delete(Long id) {
-    log.debug("Request to delete Roles : {}", id);
-    rolesRepository.deleteById(id);
-  }
 }

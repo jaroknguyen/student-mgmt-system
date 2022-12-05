@@ -1,6 +1,10 @@
 package edu.student.system.service;
 
 import edu.student.system.service.dto.UsersDTO;
+import edu.student.system.web.rest.vm.UserDetail;
+import edu.student.system.web.rest.vm.UserDetailVM;
+import edu.student.system.web.rest.vm.UserVM;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -11,33 +15,25 @@ public interface UsersService {
   /**
    * Save a users.
    *
-   * @param usersDTO the entity to save.
+   * @param userDetail the entity to save.
    * @return the persisted entity.
    */
-  UsersDTO save(UsersDTO usersDTO);
+  UsersDTO save(UserDetail userDetail) throws Exception;
 
   /**
    * Updates a users.
    *
-   * @param usersDTO the entity to update.
+   * @param userDetail the entity to update.
    * @return the persisted entity.
    */
-  UsersDTO update(UsersDTO usersDTO);
-
-  /**
-   * Partially updates a users.
-   *
-   * @param usersDTO the entity to update partially.
-   * @return the persisted entity.
-   */
-  Optional<UsersDTO> partialUpdate(UsersDTO usersDTO);
+  UserDetail update(UserDetail userDetail) throws Exception;
 
   /**
    * Get all the users.
    *
    * @return the list of entities.
    */
-  List<UsersDTO> findAll();
+  List<UserVM> findAll();
 
   /**
    * Get the "id" users.
@@ -45,7 +41,7 @@ public interface UsersService {
    * @param id the id of the entity.
    * @return the entity.
    */
-  Optional<UsersDTO> findOne(Long id);
+  Optional<UserDetailVM> findOne(Long id);
 
   /**
    * Delete the "id" users.
@@ -53,4 +49,7 @@ public interface UsersService {
    * @param id the id of the entity.
    */
   void delete(Long id);
+
+  String authenticate(String username, String password, Boolean isRemember);
+
 }

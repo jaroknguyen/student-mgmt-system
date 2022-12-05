@@ -1,5 +1,7 @@
 package edu.student.system.service;
 
+import edu.student.system.domain.Roles;
+import edu.student.system.domain.enumeration.RoleName;
 import edu.student.system.service.dto.RolesDTO;
 import java.util.List;
 import java.util.Optional;
@@ -8,29 +10,6 @@ import java.util.Optional;
  * Service Interface for managing {@link edu.student.system.domain.Roles}.
  */
 public interface RolesService {
-  /**
-   * Save a roles.
-   *
-   * @param rolesDTO the entity to save.
-   * @return the persisted entity.
-   */
-  RolesDTO save(RolesDTO rolesDTO);
-
-  /**
-   * Updates a roles.
-   *
-   * @param rolesDTO the entity to update.
-   * @return the persisted entity.
-   */
-  RolesDTO update(RolesDTO rolesDTO);
-
-  /**
-   * Partially updates a roles.
-   *
-   * @param rolesDTO the entity to update partially.
-   * @return the persisted entity.
-   */
-  Optional<RolesDTO> partialUpdate(RolesDTO rolesDTO);
 
   /**
    * Get all the roles.
@@ -42,15 +21,9 @@ public interface RolesService {
   /**
    * Get the "id" roles.
    *
-   * @param id the id of the entity.
+   * @param roleName the id of the entity.
    * @return the entity.
    */
-  Optional<RolesDTO> findOne(Long id);
+  Optional<Roles> findByRoleName(RoleName roleName);
 
-  /**
-   * Delete the "id" roles.
-   *
-   * @param id the id of the entity.
-   */
-  void delete(Long id);
 }

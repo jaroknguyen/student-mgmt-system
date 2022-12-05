@@ -38,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
     }
 
-    @Bean
+    @Bean(value = "PwdEncoder")
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -86,8 +86,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/api/authenticate").permitAll()
-            //.antMatchers("/api/student").hasAuthority("USER")
-            //.antMatchers("/api/admin").hasAuthority("ADMIN")
 
             .anyRequest().authenticated()
 
