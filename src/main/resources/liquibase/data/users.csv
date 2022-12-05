@@ -1,0 +1,2 @@
+id;first_name;last_name;login;hash_password;activated
+1;Chi;Nguyen;admin;pwd;true

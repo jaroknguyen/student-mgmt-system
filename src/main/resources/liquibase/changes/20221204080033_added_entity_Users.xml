@@ -1,0 +1,47 @@
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <!--
+        Added the entity Users.
+    -->
+    <changeSet id="20221204080033-1" author="liquibase">
+        <createTable tableName="users">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="login" type="varchar(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="login-constraint"/>
+            </column>
+            <column name="hash_password" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="activated" type="boolean" defaultValue="true">
+                <constraints nullable="false" />
+            </column>
+            <column name="role_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20221204080033-1-data" author="liquibase" context="faker">
+        <loadData
+                  file="liquibase/data/users.csv"
+                  separator=";"
+                  tableName="users">
+            <column name="id" type="numeric"/>
+            <column name="first_name" type="string"/>
+            <column name="last_name" type="string"/>
+            <column name="login" type="string"/>
+            <column name="hash_password" type="string"/>
+            <column name="activated" type="boolean"/>
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

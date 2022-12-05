@@ -1,1 +1,1 @@
-# student-mgmt-system
+# student-mgmt-service

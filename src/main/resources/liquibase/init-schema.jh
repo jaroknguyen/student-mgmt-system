@@ -1,0 +1,25 @@
+entity Roles {
+	id Long
+	name RoleName
+}
+
+entity Users {
+	id Long
+	firstName String
+	lastName String
+	login String
+    	hashPassword String
+	activated Boolean
+}
+
+enum RoleName {
+	ADMIN, MENTOR, STUDENT
+}
+
+relationship ManyToOne {
+	Users{role} to Roles
+}
+
+dto * with mapstruct
+service * with serviceClass
+service * with serviceImpl
