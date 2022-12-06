@@ -4,6 +4,7 @@ import edu.student.system.domain.Roles;
 import edu.student.system.domain.Users;
 import edu.student.system.domain.enumeration.RoleName;
 import edu.student.system.repository.UsersRepository;
+import edu.student.system.security.Constant;
 import edu.student.system.security.UserNotActivatedException;
 import edu.student.system.security.jwt.TokenProvider;
 import edu.student.system.service.RolesService;
@@ -65,7 +66,7 @@ public class UsersServiceImpl implements UsersService {
       UsersRepository usersRepository,
       UsersMapper usersMapper,
       TokenProvider tokenProvider,
-      AuthenticationManagerBuilder authenticationManagerBuilder, RolesService rolesService) {
+      RolesService rolesService) {
     this.usersRepository = usersRepository;
     this.usersMapper = usersMapper;
     this.tokenProvider = tokenProvider;
@@ -116,9 +117,7 @@ public class UsersServiceImpl implements UsersService {
   @Transactional(readOnly = true)
   public List<UserVM> findAll() {
     log.debug("Request to get all Users");
-    Optional<String> optionalAuthority =
-        SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-        .parallelStream().map( a -> String.valueOf(a)).findFirst();
+    Optional<String> optionalAuthority = Constant.getRealRoleName().parallelStream().findFirst();
     if(!optionalAuthority.isPresent()) {
       return Collections.EMPTY_LIST;
     }
@@ -153,9 +152,7 @@ public class UsersServiceImpl implements UsersService {
   @Transactional(readOnly = true)
   public Optional<UserDetailVM> findOne(Long id) {
     log.debug("Request to get Users : {}", id);
-    Optional<String> optionalAuthority =
-        SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-            .parallelStream().map( a -> String.valueOf(a)).findFirst();
+    Optional<String> optionalAuthority = Constant.getRealRoleName().parallelStream().findFirst();
     if(!optionalAuthority.isPresent()) {
       return Optional.empty();
     }

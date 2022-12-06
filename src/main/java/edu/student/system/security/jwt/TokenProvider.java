@@ -1,5 +1,6 @@
 package edu.student.system.security.jwt;
 
+import edu.student.system.security.Constant;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -18,6 +19,7 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 @Component
 public class TokenProvider implements InitializingBean {
@@ -25,6 +27,7 @@ public class TokenProvider implements InitializingBean {
     private final Logger log = LoggerFactory.getLogger(TokenProvider.class);
 
     private static final String AUTHORITIES_KEY = "auth";
+    private static final String ROLES_KEY = "role";
 
     private final String base64Secret;
     private final long tokenValidityInMilliseconds;
@@ -48,9 +51,26 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser()
+            .setSigningKey(key)
+            .parseClaimsJws(token)
+            .getBody();
+    }
+
     public String createToken(Authentication authentication, boolean rememberMe) {
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
+            .map(auth -> Constant.ROLE_PREFIX.concat(auth))
             .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
@@ -65,6 +85,7 @@ public class TokenProvider implements InitializingBean {
             .setSubject(authentication.getName())
             .claim(AUTHORITIES_KEY, authorities)
             .signWith(key, SignatureAlgorithm.HS512)
+            .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(validity)
             .compact();
     }

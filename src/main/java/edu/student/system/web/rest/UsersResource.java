@@ -46,34 +46,34 @@ public class UsersResource {
   }
 
   @PostMapping("/users")
-  @PreAuthorize("hasAnyAuthority('ADMIN','MENTOR','STUDENT')")
+  @PreAuthorize("hasAnyRole('ADMIN','MENTOR','STUDENT')")
   public ResponseEntity<List<UserVM>> getUsers() {
     List<UserVM> users = usersService.findAll();
     return new ResponseEntity<>(users, HttpStatus.OK);
   }
 
   @PostMapping("/user/{id}")
-  @PreAuthorize("hasAnyAuthority('ADMIN','MENTOR','STUDENT')")
+  @PreAuthorize("hasAnyRole('ADMIN','MENTOR','STUDENT')")
   public ResponseEntity<UserDetailVM> getUserDetailById(@PathVariable("id") Long id) {
     Optional<UserDetailVM> userDetailVMOptional = usersService.findOne(id);
     return new ResponseEntity<>(userDetailVMOptional.get(), HttpStatus.OK);
   }
 
   @DeleteMapping("/user/{id}")
-  @PreAuthorize("hasAuthority('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   public void deleteUserById(@PathVariable("id") Long id) {
     usersService.delete(id);
   }
 
   @PostMapping("/user/create")
-  @PreAuthorize("hasAuthority('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<UsersDTO> createUser(@Valid @RequestBody UserDetail userDetail) throws Exception {
     UsersDTO usersDTO = usersService.save(userDetail);
     return new ResponseEntity<>(usersDTO, HttpStatus.OK);
   }
 
   @PostMapping("/user/edit")
-  @PreAuthorize("hasAuthority('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<UserDetail> updateUser(@Valid @RequestBody UserDetail userDetail) throws Exception {
     UserDetail userDetail1 = usersService.update(userDetail);
     return new ResponseEntity<>(userDetail1, HttpStatus.OK);
