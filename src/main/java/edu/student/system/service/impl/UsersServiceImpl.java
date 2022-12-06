@@ -4,12 +4,10 @@ import edu.student.system.domain.Roles;
 import edu.student.system.domain.Users;
 import edu.student.system.domain.enumeration.RoleName;
 import edu.student.system.repository.UsersRepository;
-import edu.student.system.security.Constant;
 import edu.student.system.security.UserNotActivatedException;
 import edu.student.system.security.jwt.TokenProvider;
 import edu.student.system.service.RolesService;
 import edu.student.system.service.UsersService;
-import edu.student.system.service.dto.RolesDTO;
 import edu.student.system.service.dto.UsersDTO;
 import edu.student.system.service.mapper.UsersMapper;
 
@@ -19,20 +17,17 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import edu.student.system.web.rest.vm.UserDetail;
 import edu.student.system.web.rest.vm.UserDetailVM;
 import edu.student.system.web.rest.vm.UserVM;
-import org.apache.logging.log4j.util.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,6 +56,10 @@ public class UsersServiceImpl implements UsersService {
   @Autowired
   @Qualifier("PwdEncoder")
   private PasswordEncoder passwordEncoder;
+
+  @Autowired @Lazy
+  @Qualifier("RealRoleFromContext")
+  private List<String> currentRoleName;
 
   public UsersServiceImpl(
       UsersRepository usersRepository,
@@ -117,7 +116,7 @@ public class UsersServiceImpl implements UsersService {
   @Transactional(readOnly = true)
   public List<UserVM> findAll() {
     log.debug("Request to get all Users");
-    Optional<String> optionalAuthority = Constant.getRealRoleName().parallelStream().findFirst();
+    Optional<String> optionalAuthority = currentRoleName.parallelStream().findFirst();
     if(!optionalAuthority.isPresent()) {
       return Collections.EMPTY_LIST;
     }
@@ -152,7 +151,7 @@ public class UsersServiceImpl implements UsersService {
   @Transactional(readOnly = true)
   public Optional<UserDetailVM> findOne(Long id) {
     log.debug("Request to get Users : {}", id);
-    Optional<String> optionalAuthority = Constant.getRealRoleName().parallelStream().findFirst();
+    Optional<String> optionalAuthority = currentRoleName.parallelStream().findFirst();
     if(!optionalAuthority.isPresent()) {
       return Optional.empty();
     }

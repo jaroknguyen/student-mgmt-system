@@ -1,40 +1,50 @@
 package edu.student.system.security.jwt;
 
-import edu.student.system.security.Constant;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.stereotype.Component;
+import static edu.student.system.config.Constants.ROLE_PREFIX;
 
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Component;
 @Component
-public class TokenProvider implements InitializingBean {
+public class TokenProvider implements Serializable {
 
     private final Logger log = LoggerFactory.getLogger(TokenProvider.class);
 
     private static final String AUTHORITIES_KEY = "auth";
-    private static final String ROLES_KEY = "role";
 
     private final String base64Secret;
     private final long tokenValidityInMilliseconds;
     private final long tokenValidityInMillisecondsForRememberMe;
 
     private Key key;
-
 
     public TokenProvider(
         @Value("${jwt.base64-secret}") String base64Secret,
@@ -45,7 +55,7 @@ public class TokenProvider implements InitializingBean {
         this.tokenValidityInMillisecondsForRememberMe = tokenValidityInSecondsForRememberMe * 1000;
     }
 
-    @Override
+    @PostConstruct
     public void afterPropertiesSet() {
         byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -70,7 +80,7 @@ public class TokenProvider implements InitializingBean {
     public String createToken(Authentication authentication, boolean rememberMe) {
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
-            .map(auth -> Constant.ROLE_PREFIX.concat(auth))
+            .map(auth -> ROLE_PREFIX.concat(auth))
             .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
@@ -124,5 +134,14 @@ public class TokenProvider implements InitializingBean {
             log.trace("JWT token compact of handler are invalid trace: {}", e);
         }
         return false;
+    }
+
+    @Bean(name = "RealRoleFromContext")
+    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    public List<String> getRealRoleNameFromContext() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().parallelStream()
+            .map(GrantedAuthority::getAuthority)
+            .map(r -> r.replaceFirst(ROLE_PREFIX,""))
+            .collect(Collectors.toList());
     }
 }
