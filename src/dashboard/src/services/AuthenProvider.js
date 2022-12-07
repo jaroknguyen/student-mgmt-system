@@ -1,6 +1,10 @@
-import axios from 'axios';
-import { setReqAuthHeader, setToken } from "../helpers/AuthToken"
+import httpConnector from '../config/apis';
+import { setToken } from './StorageService';
 
-export const authen = (username, password) => {
-  return axios.post("http://localhost:8080/api/authenticate", {username, password});
+export const authen = (username, password, isRemember=false) => {
+  return httpConnector.post(`/api/authenticate`, {username, password, isRemember})
+  .then(({token}) => {
+    setToken(token);
+    return Promise.resolve({token});
+  });
 }

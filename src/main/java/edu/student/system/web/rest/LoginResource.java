@@ -4,6 +4,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import java.util.HashMap;
+
 import edu.student.system.security.jwt.JWTFilter;
 import edu.student.system.security.jwt.TokenProvider;
 import edu.student.system.service.UsersService;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class LoginResource {
 
+    private final String tokenKey = "token";
     private final UsersService usersService;
 
     public LoginResource(UsersService usersService) {
@@ -34,18 +37,20 @@ public class LoginResource {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<HashMap<String, String>> authorize(@Valid @RequestBody LoginDTO loginDTO) {
 
         String jwt = usersService.authenticate(loginDTO.getUsername(), loginDTO.getPassword(), loginDTO.getIsRemember());
 
+        HashMap<String, String> tokenObject = new HashMap<>();
         HttpHeaders httpHeaders = new HttpHeaders();
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         if(jwt != null) {
             httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
             status = HttpStatus.OK;
+            tokenObject.put(tokenKey, jwt);
         }
 
-        return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, status);
+        return new ResponseEntity<>(tokenObject, httpHeaders, status);
     }
 
     @PostMapping("/logout")

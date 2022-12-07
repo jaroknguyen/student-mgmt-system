@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,14 +46,14 @@ public class UsersResource {
     this.usersService = usersService;
   }
 
-  @PostMapping("/users")
+  @GetMapping("/users")
   @PreAuthorize("hasAnyRole('ADMIN','MENTOR','STUDENT')")
   public ResponseEntity<List<UserVM>> getUsers() {
     List<UserVM> users = usersService.findAll();
     return new ResponseEntity<>(users, HttpStatus.OK);
   }
 
-  @PostMapping("/user/{id}")
+  @GetMapping("/user/{id}")
   @PreAuthorize("hasAnyRole('ADMIN','MENTOR','STUDENT')")
   public ResponseEntity<UserDetailVM> getUserDetailById(@PathVariable("id") Long id) {
     Optional<UserDetailVM> userDetailVMOptional = usersService.findOne(id);

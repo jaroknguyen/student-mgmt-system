@@ -81,11 +81,13 @@ class LoginPage extends React.Component {
   handleLogin() {
     const {username, password} = this.state;
     authen(username, password)
-    .then(() => {
-
+    .then(({token}) => {
+      console.log(token);
+      //redirect user to home page
+      window.location.href = '/home'
     })
-    .catch(() => {
-      
+    .catch((e) => {
+      console.error(e);
     })
   }
 

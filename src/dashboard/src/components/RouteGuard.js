@@ -1,5 +1,7 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
+import { TOKEN_KEY } from '../config/Constant';
+import { getToken } from '../services/StorageService';
 
 const RouteGuard = ({ component: Component, ...rest }) => {
 
@@ -7,7 +9,7 @@ const RouteGuard = ({ component: Component, ...rest }) => {
         let flag = false;
 
         //check user has JWT token
-        localStorage.getItem("token") ? flag=true : flag=false
+        getToken(TOKEN_KEY) ? flag=true : flag=false
         
         return flag
     }

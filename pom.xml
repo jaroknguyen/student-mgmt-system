@@ -158,7 +158,7 @@
 		<profile>
 			<id>jib-push-to-local</id>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<build>
 				<plugins>
@@ -260,9 +260,9 @@
 			</build>
 		</profile>
 		<profile>
-			<id>build-frontend</id>
+			<id>build-dashboard</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<build>
 				<plugins>
@@ -272,7 +272,7 @@
 						<version>1.12.0</version>
 						<configuration>
 							<nodeVersion>v4.6.0</nodeVersion>
-							<workingDirectory>src/frontend</workingDirectory>
+							<workingDirectory>src/dashboard</workingDirectory>
 						</configuration>
 						<executions>
 							<execution>
@@ -317,7 +317,7 @@
 								<configuration>
 									<resources>
 										<resource>
-											<directory>src/frontend/build</directory>
+											<directory>src/dashboard/build</directory>
 										</resource>
 									</resources>
 									<outputDirectory>${basedir}/target/classes/static</outputDirectory>
