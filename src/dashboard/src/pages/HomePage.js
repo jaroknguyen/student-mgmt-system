@@ -1,4 +1,6 @@
 
+import './HomePage.sass'
+
 function HomePage() {
     return (
       <div>
